@@ -28,6 +28,14 @@
 	<link rel="stylesheet" href="<?= base_url('assets/css/bootstrap.min.css') ?>">
 	<link rel="stylesheet" href="<?= base_url('assets/css/atlantis.min.css') ?>">
 
+	<?php
+	// Penanda versi diambil dari waktu ubah terakhir berkasnya. Tanpa ini,
+	// browser bisa terus memakai salinan CSS lama yang tersimpan di cache,
+	// sehingga perubahan tampilan tidak kelihatan sampai cache dibersihkan
+	// manual. Angkanya berubah sendiri setiap kali berkas CSS disunting.
+	$cssKustom = FCPATH . 'assets/css/internapps.css';
+	$versiCss  = is_file($cssKustom) ? filemtime($cssKustom) : '1';
+	?>
 	<!-- Penyesuaian warna komponen yang tidak punya varian indigo di Atlantis -->
-	<link rel="stylesheet" href="<?= base_url('assets/css/internapps.css') ?>">
+	<link rel="stylesheet" href="<?= base_url('assets/css/internapps.css') ?>?v=<?= esc($versiCss, 'attr') ?>">
 </head>

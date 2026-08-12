@@ -200,3 +200,23 @@
 .form-control.is-invalid:focus {
 	border-color: #f25961;
 }
+
+/* --- Foto ditampilkan utuh ---------------------------------------
+   Kelas .avatar bawaan Atlantis memaksa kotak 1:1 dengan
+   object-fit: cover, jadi gambar dipotong agar memenuhi lingkaran.
+   Foto peserta umumnya potret (pas foto), sehingga pemotongan itu
+   memangkas bagian atas dan bawah gambar.
+
+   Di sini gambar dibiarkan memakai rasio aslinya: tingginya dibatasi,
+   lebarnya menyesuaikan sendiri, sehingga seluruh isi foto terlihat. */
+.foto-penuh {
+	display: block;
+	margin: 0 auto;
+	width: auto;
+	height: auto;
+	max-width: 100%;
+	max-height: 260px;
+	border-radius: 8px;
+	border: 1px solid #ebedf2;
+	background-color: #f9fafb;
+}

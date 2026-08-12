@@ -14,10 +14,10 @@
 	<div class="col-md-4">
 		<div class="card card-round">
 			<div class="card-body text-center py-4">
-				<div class="avatar avatar-xl mx-auto mb-3">
+				<div class="mb-3">
 					<img src="<?= esc(foto_user($user['foto'])) ?>"
 						alt="Foto profil"
-						class="avatar-img rounded-circle">
+						class="img-fluid foto-penuh">
 				</div>
 
 				<h4 class="fw-bold mb-1"><?= esc($user['nama_pengguna']) ?></h4>

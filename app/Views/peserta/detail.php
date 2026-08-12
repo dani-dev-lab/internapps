@@ -38,10 +38,10 @@
 		<div class="col-md-4">
 			<div class="card card-round">
 				<div class="card-body text-center py-4">
-					<div class="avatar avatar-xl mx-auto mb-3">
+					<div class="mb-3">
 						<img src="<?= esc(foto_peserta($p['link_foto_peserta'])) ?>"
 							alt="Foto <?= esc($p['nama_peserta']) ?>"
-							class="avatar-img rounded-circle">
+							class="img-fluid foto-penuh">
 					</div>
 					<h4 class="fw-bold mb-1"><?= esc($p['nama_peserta']) ?></h4>
 					<p class="text-muted mb-3"><?= esc($p['nama_jurusan']) ?></p>
