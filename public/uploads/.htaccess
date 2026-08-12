@@ -1,0 +1,10 @@
+# Folder ini hanya boleh berisi gambar yang diunggah pengguna.
+# Matikan eksekusi skrip apa pun di sini, supaya berkas berbahaya yang
+# lolos masuk tetap tidak bisa dijalankan sebagai program.
+<FilesMatch "\.(php|php3|php4|php5|php7|phtml|phar|pl|py|cgi|asp|aspx|sh|shtml)$">
+    Require all denied
+</FilesMatch>
+
+php_flag engine off
+Options -Indexes -ExecCGI
+AddHandler default-handler .php .phtml .phar

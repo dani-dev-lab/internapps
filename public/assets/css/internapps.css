@@ -1,0 +1,202 @@
+/*
+ * Internapps — penyesuaian kecil di atas Atlantis Lite.
+ * ---------------------------------------------------------------
+ * Berkas ini sengaja dibuat sependek mungkin. Isinya hanya hal yang
+ * TIDAK disediakan template: komponen yang warnanya jatuh ke bawaan
+ * Bootstrap, dan beberapa perbaikan keterbacaan.
+ *
+ * Warna aksen aplikasi: #1572E8 — varian "primary" Atlantis, sama
+ * dengan warna navbar dan menu aktif di sidebar.
+ *
+ * Untuk komponen lain JANGAN menambah aturan di sini. Atlantis sudah
+ * menyediakan varian lewat kelas seperti btn-primary, badge-primary,
+ * icon-primary, dan nav-primary.
+ */
+
+/* --- Footer ------------------------------------------------------
+   Atlantis tidak menyediakan varian warna untuk footer (tidak ada
+   .footer[data-background-color]), latarnya dipatok putih. */
+.footer {
+	background: #1572E8;
+	border-top-color: #1572E8;
+}
+
+.footer,
+.footer .copyright,
+.footer a {
+	color: #ffffff;
+}
+
+/* --- Header setelah navbar dibuang ------------------------------
+   Bawaan Atlantis: .main-header berposisi fixed, membentang selebar
+   layar, berlatar putih, dan tingginya berasal dari .navbar-header.
+   Karena elemen nav itu sudah dibuang, tanpa penyesuaian ini yang
+   tersisa justru strip putih kosong selebar layar.
+
+   Di layar lebar, header dipersempit jadi selebar blok logo (250px)
+   dan latarnya dinolkan, lalu konten ditarik ke atas mengisi ruang
+   yang ditinggalkan. Aturan ini TIDAK berlaku di layar kecil, karena
+   di sana blok logo memang harus selebar layar. */
+@media screen and (min-width: 992px) {
+	.main-header {
+		width: 250px;
+		background: transparent;
+		box-shadow: none;
+	}
+
+	.main-panel > .content,
+	.main-panel > .content-full {
+		margin-top: 0;
+	}
+}
+
+/* --- Footer menempel di dasar -----------------------------------
+   Atlantis memasang .footer sebagai position: absolute tanpa titik
+   tambat, jadi letaknya sekadar mengikuti akhir konten. Tingginya juga
+   tidak diperhitungkan .content yang memakai min-height berangka mati,
+   sehingga footer bisa menggantung atau menyembul melewati tepi layar
+   (terukur menyembul 24px).
+
+   Diubah menjadi bagian aliran normal dengan flex: konten memakai sisa
+   ruang, footer didorong ke dasar oleh margin-top: auto. Hasilnya
+   footer selalu menempel di bawah tanpa celah, berapa pun tinggi isi
+   halamannya. */
+.main-panel {
+	display: flex;
+	flex-direction: column;
+	height: auto;
+	min-height: 100vh;
+}
+
+.main-panel > .content,
+.main-panel > .content-full {
+	flex: 1 0 auto;
+	min-height: 0;
+}
+
+.main-panel > .footer {
+	position: relative;
+	margin-top: auto;
+	width: 100%;
+}
+
+/* --- Perataan optis logo ----------------------------------------
+   Badan huruf "InternApps" (puncak sampai garis dasar) berada 1,88px
+   di atas pusat kotaknya, karena ekor huruf p menambah tinggi kotak ke
+   bawah. Gambar mark hanya 0,5px. Kalau kedua kotak sekadar ditengahkan,
+   hurufnya terlihat 1,4px lebih tinggi daripada mark. Digeser turun
+   sebanyak selisih itu agar keduanya sejajar secara visual. */
+.logo-header .logo .logo-wordmark {
+	transform: translateY(1.4px);
+}
+
+/* --- Nomor halaman DataTable ------------------------------------
+   Atlantis tidak menata pagination sama sekali, jadi warnanya jatuh
+   ke biru bawaan Bootstrap (#007bff) yang berbeda dari biru aplikasi. */
+.pagination .page-link {
+	color: #1572E8;
+}
+
+.pagination .page-link:hover {
+	color: #0e5bb8;
+	background-color: #eaf2fd;
+	border-color: #cfe0fa;
+}
+
+.pagination .page-item.active .page-link {
+	color: #ffffff;
+	background-color: #1572E8;
+	border-color: #1572E8;
+}
+
+.pagination .page-link:focus {
+	box-shadow: 0 0 0 0.2rem rgba(21, 114, 232, 0.25);
+}
+
+/* --- Keterbacaan menu sidebar -----------------------------------
+   Warna bawaan Atlantis untuk menu adalah #8d9498, yang di atas putih
+   hanya berkontras 3,08:1. Digelapkan sedikit ke #6b7378 (4,83:1)
+   supaya lolos ambang 4,5:1, tanpa mengubah nuansa abu-abunya. */
+.sidebar .nav > .nav-item a p,
+.sidebar .nav > .nav-item a i {
+	color: #6b7378;
+}
+
+/* --- Nama pengguna di blok profil sidebar -----------------------
+   Atlantis memasang caret secara absolut di right: 0, tetapi teks
+   namanya diberi white-space: nowrap sehingga tidak pernah menyisakan
+   ruang untuk caret itu — nama yang panjang menabraknya.
+
+   Solusinya dua hal: sisakan ruang selebar caret, dan izinkan nama
+   panjang turun ke baris berikutnya alih-alih dipotong, supaya nama
+   tetap terbaca utuh. Caret tidak ikut bergeser karena acuan posisinya
+   elemen <a>, bukan <span> yang diberi padding. */
+.sidebar .user .info a {
+	white-space: normal;
+}
+
+.sidebar .user .info a > span {
+	padding-right: 20px;
+	line-height: 1.35;
+}
+
+/* --- Segitiga (caret) pada blok profil di sidebar ---------------
+   Atlantis hanya memutar caret untuk menu nav, tidak untuk blok user,
+   sehingga segitiganya diam saat dropdown dibuka. Aturan di bawah
+   meniru persis perilaku yang sudah dipakai Atlantis pada nav-item. */
+.sidebar .user .info a[data-toggle="collapse"] .caret {
+	/* Nilai awal ditulis eksplisit. Tanpa ini nilai awalnya "none", dan
+	   transisi CSS tidak punya titik mulai untuk dianimasikan. */
+	-webkit-transform: rotate(0deg);
+	transform: rotate(0deg);
+	transition: transform 0.3s;
+}
+
+.sidebar .user .info a[data-toggle="collapse"][aria-expanded="true"] .caret {
+	-webkit-transform: rotate(-180deg);
+	transform: rotate(-180deg);
+}
+
+/* --- Logo pada header sidebar -----------------------------------
+   Logo terdiri dari dua gambar dengan tinggi berbeda (mark 30px dan
+   wordmark 17px). Sebagai elemen inline keduanya menempel ke garis
+   dasar teks, bukan ke tengah. inline-flex membuat keduanya sejajar
+   di tengah berapa pun tingginya. */
+.logo-header .logo {
+	display: inline-flex;
+	align-items: center;
+	height: 100%;
+}
+
+/* --- Ikon aksi di dalam tabel -----------------------------------
+   btn-link yang digabung dengan btn-primary membuat latar DAN teks
+   sama-sama biru, jadi ikonnya tidak kelihatan — hanya tampak kotak
+   berwarna. btn-link seharusnya selalu tanpa latar. */
+.btn-link,
+.btn-link:hover,
+.btn-link:focus,
+.btn-link:disabled,
+.btn-link.disabled {
+	background-color: transparent;
+	border-color: transparent;
+	box-shadow: none;
+}
+
+/* --- Kotak isian saat difokus -----------------------------------
+   Atlantis memakai biru #3e93ff, dan <select> memakai biru bawaan
+   Bootstrap #80bdff. Keduanya disamakan dengan biru aplikasi. */
+.form-control:focus,
+.custom-select:focus,
+.dataTables_wrapper .dataTables_filter input:focus,
+.dataTables_wrapper .dataTables_length select:focus {
+	border-color: #1572E8;
+}
+
+.custom-select:focus {
+	box-shadow: 0 0 0 0.2rem rgba(21, 114, 232, 0.2);
+}
+
+/* Isian yang gagal validasi tetap merah, jangan tertimpa aturan di atas. */
+.form-control.is-invalid:focus {
+	border-color: #f25961;
+}
