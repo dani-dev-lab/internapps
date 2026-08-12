@@ -37,7 +37,7 @@ Dibangun dengan CodeIgniter 4 dan template Atlantis Lite.
 
 | Kebutuhan | Versi |
 | --- | --- |
-| PHP | 8.3 (dengan ekstensi `intl`, `mbstring`, `mysqlnd`) |
+| PHP | 8.2 ke atas — diuji pada 8.3 (dengan ekstensi `intl`, `mbstring`, `mysqlnd`) |
 | CodeIgniter | 4.7 |
 | Database | MySQL / MariaDB |
 | Web server | Apache (disarankan lewat Laragon / XAMPP) |
@@ -124,7 +124,8 @@ http://localhost/internapps/public/
 | `peserta5` | `peserta123` | Peserta |
 
 Akun `peserta1` sampai `peserta5` adalah **akun contoh** yang menyertai data peserta
-contoh. Keduanya boleh dihapus setelah data peserta yang sebenarnya dimasukkan.
+contoh. Akun beserta data pesertanya boleh dihapus setelah data peserta yang
+sebenarnya dimasukkan.
 
 > **Ganti semua password di atas sebelum aplikasi dipakai.** Password ini hanya untuk
 > memudahkan pengujian pertama kali. Cara menggantinya ada di bagian
@@ -191,9 +192,12 @@ sedang berjalan.
 Menambah peserta:
 
 1. Tekan tombol **Tambah Peserta**
-2. Isi NIK, nama, universitas, fakultas, jurusan, tanggal mulai, tanggal berakhir
-3. Foto peserta boleh dikosongkan
-4. Tekan **Simpan**
+2. Isi NIK, nama peserta, perguruan tinggi, fakultas, program studi, tanggal mulai,
+   dan tanggal berakhir
+3. **Akun Login Peserta** boleh dibiarkan *"Tanpa akun login"* — lihat penjelasan di
+   bawah
+4. Foto peserta boleh dikosongkan
+5. Tekan **Simpan**
 
 Melihat rincian: tekan ikon **mata** pada baris peserta.
 Mengubah: tekan ikon **pensil**, ubah seperlunya, lalu **Simpan**.
@@ -203,6 +207,24 @@ muncul.
 > Menghapus data peserta bersifat permanen dan sekaligus membuang berkas fotonya.
 > Kalau peserta itu sudah punya akun, akunnya tetap ada tetapi tidak lagi memiliki
 > data magang.
+
+**Menautkan data peserta ke akun login**
+
+Pada form tambah maupun ubah peserta ada kolom **Akun Login Peserta**. Kolom ini
+menentukan akun mana yang berhak melihat data magang tersebut lewat menu
+**Data Magang Saya**.
+
+- Isinya hanya akun ber-role **peserta** yang **belum tertaut** ke data mana pun.
+  Akun admin dan staff tidak pernah muncul di sini.
+- Pilihan **"Tanpa akun login"** berarti datanya tercatat tetapi belum bisa dilihat
+  siapa pun selain admin dan staff. Ini keadaan yang normal: data peserta biasanya
+  didaftarkan lebih dulu, akunnya menyusul.
+- Saat mengubah peserta, akun yang sedang tertaut tetap muncul terpilih. Mengembalikan
+  pilihan ke *"Tanpa akun login"* akan memutus tautannya — akunnya tidak terhapus,
+  hanya kehilangan akses ke data magang itu.
+
+Satu akun hanya boleh tertaut ke satu data peserta. Tautan ini juga terbentuk otomatis
+ketika peserta mendaftarkan akunnya sendiri lewat halaman **Daftar**.
 
 **Mengelola pengguna aplikasi**
 
@@ -219,6 +241,10 @@ Ada dua pembatasan yang sengaja dipasang:
 
 Saat mengubah pengguna, kolom password boleh dibiarkan kosong apabila passwordnya
 tidak ingin diganti.
+
+> Menghapus akun **tidak** ikut menghapus data magangnya. Data pesertanya tetap
+> tersimpan, hanya berubah menjadi tidak tertaut ke akun mana pun, sehingga bisa
+> ditautkan lagi ke akun baru di kemudian hari.
 
 ### 4. Alur Staff
 
@@ -300,13 +326,20 @@ otomatis. Ini berlaku sama untuk admin, staff, maupun peserta.
 | Tambah / ubah / hapus pengguna | `/users/...` | ✅ | ❌ | ❌ |
 | Daftar peserta | `/peserta` | ✅ | ✅ | ❌ |
 | Tambah peserta | `/peserta/create` | ✅ | ✅ | ❌ |
+| Detail peserta | `/peserta/detail/{id}` | ✅ | ✅ | ❌ |
 | Ubah peserta | `/peserta/edit/{id}` | ✅ | ✅ | ❌ |
 | Hapus peserta | `/peserta/delete/{id}` | ✅ | ❌ | ❌ |
 | Data magang saya | `/data-saya` | ❌ | ❌ | ✅ |
+| Logout | `/logout` | ✅ | ✅ | ✅ |
 
 Menu yang tidak boleh diakses tidak ditampilkan di sidebar. Namun penyembunyian menu
 itu bukan pengamannya — pembatasan yang sebenarnya berada pada *filter* di tiap route,
 sehingga membuka alamatnya secara langsung tetap menghasilkan **403**.
+
+Seluruh alamat yang **mengubah data** — menyimpan, memperbarui, menghapus, mengunggah
+foto, mengganti password — hanya menerima **POST**, tidak pernah GET. Karena itu
+tidak ada satu pun perubahan data yang bisa terpicu hanya karena sebuah alamat dibuka
+di browser, dan semuanya terlindungi token CSRF.
 
 ---
 
@@ -317,22 +350,27 @@ sehingga membuka alamatnya secara langsung tetap menghasilkan **403**.
 | Kolom | Ketentuan |
 | --- | --- |
 | NIK | Wajib, tepat 16 digit angka, tidak boleh sama dengan peserta lain |
-| Nama peserta | Wajib, 3–100 karakter |
-| Nama universitas | Wajib, 3–150 karakter |
-| Nama fakultas | Wajib, 2–150 karakter |
-| Nama jurusan | Wajib, 2–150 karakter |
-| Tanggal mulai magang | Wajib |
-| Tanggal berakhir magang | Wajib, tidak boleh lebih awal dari tanggal mulai |
-| Foto peserta | Opsional — JPG/JPEG/PNG/WEBP, maksimum 2 MB |
+| Nama Peserta | Wajib, 3–100 karakter |
+| Perguruan Tinggi | Wajib, 3–150 karakter |
+| Fakultas | Wajib, 2–150 karakter |
+| Program Studi | Wajib, 2–150 karakter |
+| Tanggal Mulai Magang | Wajib, format tanggal yang sah |
+| Tanggal Berakhir Magang | Wajib, tidak boleh lebih awal dari tanggal mulai |
+| Akun Login Peserta | Opsional — hanya akun peserta yang belum tertaut |
+| Foto Peserta | Opsional — JPG/JPEG/PNG/WEBP, maksimum 2 MB |
+
+NIK disimpan sebagai teks 16 karakter, bukan angka, supaya NIK yang diawali angka `0`
+tidak kehilangan digit depannya.
 
 **Data pengguna**
 
 | Kolom | Ketentuan |
 | --- | --- |
-| Username | Wajib, minimal 3 karakter, hanya huruf/angka/garis bawah/strip, unik |
-| Password | Wajib saat menambah, minimal 6 karakter. Saat mengubah boleh dikosongkan |
-| Nama pengguna | Wajib |
+| Username | Wajib, 3–50 karakter, hanya huruf/angka/garis bawah/strip, unik |
+| Password | Wajib saat menambah, 6–100 karakter. Saat mengubah boleh dikosongkan |
+| Nama pengguna | Wajib, 3–100 karakter |
 | Role | Wajib dipilih |
+| Foto profil | Opsional — JPG/JPEG/PNG/WEBP, maksimum 2 MB |
 
 Seluruh aturan di atas diperiksa di sisi server, bukan hanya di browser.
 
