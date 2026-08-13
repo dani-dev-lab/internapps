@@ -196,6 +196,10 @@
 					</div>
 
 					<div class="d-flex justify-content-between align-items-center py-2 border-top">
+						<span><i class="fas fa-shield-alt text-primary mr-2"></i> Superadmin</span>
+						<span class="badge badge-primary"><?= (int) $pengguna['superadmin'] ?></span>
+					</div>
+					<div class="d-flex justify-content-between align-items-center py-2 border-top">
 						<span><i class="fas fa-user-shield text-secondary mr-2"></i> Admin</span>
 						<span class="badge badge-secondary"><?= (int) $pengguna['admin'] ?></span>
 					</div>

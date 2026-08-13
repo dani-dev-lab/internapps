@@ -32,16 +32,20 @@ class Dashboard extends BaseController
             'pengguna'   => null,
         ];
 
-        // Ringkasan akun hanya ditampilkan untuk admin, karena staff memang
-        // tidak berhak melihat data pengguna aplikasi.
-        if (session('nama_role') === 'admin') {
+        // Ringkasan akun ditampilkan untuk superadmin dan admin — keduanya
+        // berhak membuka halaman Data Pengguna. Staff tidak, karena itu
+        // panelnya tidak dibuat sama sekali untuk role tersebut.
+        if (in_array(session('nama_role'), ['superadmin', 'admin'], true)) {
             $userModel = new UserModel();
 
+            // Superadmin ikut dihitung. Kalau tidak, jumlah totalnya tidak
+            // akan sama dengan penjumlahan rinciannya di bawahnya.
             $data['pengguna'] = [
-                'total'   => $userModel->countAllResults(),
-                'admin'   => $userModel->hitungPerRole('admin'),
-                'staff'   => $userModel->hitungPerRole('staff'),
-                'peserta' => $userModel->hitungPerRole('peserta'),
+                'total'      => $userModel->countAllResults(),
+                'superadmin' => $userModel->hitungPerRole('superadmin'),
+                'admin'      => $userModel->hitungPerRole('admin'),
+                'staff'      => $userModel->hitungPerRole('staff'),
+                'peserta'    => $userModel->hitungPerRole('peserta'),
             ];
         }
 

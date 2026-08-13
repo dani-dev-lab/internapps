@@ -38,6 +38,9 @@ class UserSeeder extends Seeder
         // orang, supaya tidak ada yang mengiranya peserta magang sungguhan.
         // Lihat keterangan lengkap di PesertaMagangSeeder.
         $akun = [
+            // Pemilik aplikasi. Akun inilah yang tidak dapat dihapus atau
+            // diturunkan rolenya oleh admin biasa.
+            ['superadmin', 'super123', 'Super Admin Internapps',   'superadmin'],
             ['admin',    'admin123',   'Administrator Internapps', 'admin'],
             ['staff',    'staff123',   'Staff Kepegawaian',        'staff'],
             ['peserta1', 'peserta123', 'Peserta Contoh Satu',      'peserta'],

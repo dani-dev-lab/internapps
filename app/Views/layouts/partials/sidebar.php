@@ -20,11 +20,11 @@ $roleAktif   = session('nama_role');
 $segmenAktif = explode('/', trim(uri_string(), '/'))[0];
 
 $menu = [
-	['tipe' => 'item',  'label' => 'Dashboard',           'icon' => 'fas fa-home',          'url' => 'dashboard', 'segmen' => 'dashboard', 'roles' => ['admin', 'staff', 'peserta']],
+	['tipe' => 'item',  'label' => 'Dashboard',           'icon' => 'fas fa-home',          'url' => 'dashboard', 'segmen' => 'dashboard', 'roles' => ['superadmin', 'admin', 'staff', 'peserta']],
 
-	['tipe' => 'seksi', 'label' => 'Master Data',                                                                                          'roles' => ['admin', 'staff', 'peserta']],
-	['tipe' => 'item',  'label' => 'Data Pengguna',       'icon' => 'fas fa-user-shield',   'url' => 'users',     'segmen' => 'users',     'roles' => ['admin']],
-	['tipe' => 'item',  'label' => 'Data Peserta Magang', 'icon' => 'fas fa-user-graduate', 'url' => 'peserta',   'segmen' => 'peserta',   'roles' => ['admin', 'staff']],
+	['tipe' => 'seksi', 'label' => 'Master Data',                                                                                          'roles' => ['superadmin', 'admin', 'staff', 'peserta']],
+	['tipe' => 'item',  'label' => 'Data Pengguna',       'icon' => 'fas fa-user-shield',   'url' => 'users',     'segmen' => 'users',     'roles' => ['superadmin', 'admin']],
+	['tipe' => 'item',  'label' => 'Data Peserta Magang', 'icon' => 'fas fa-user-graduate', 'url' => 'peserta',   'segmen' => 'peserta',   'roles' => ['superadmin', 'admin', 'staff']],
 	['tipe' => 'item',  'label' => 'Data Magang Saya',    'icon' => 'fas fa-id-card',       'url' => 'data-saya', 'segmen' => 'data-saya', 'roles' => ['peserta']],
 
 	// Profil dan Logout sengaja tidak dimasukkan ke daftar menu ini. Keduanya

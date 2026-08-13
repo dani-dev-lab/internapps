@@ -101,7 +101,7 @@ Perintah ini membuat tiga tabel: `roles`, `users`, dan `peserta_magang`.
 php spark db:seed DatabaseSeeder
 ```
 
-Perintah ini mengisi 3 role, 7 akun, dan 5 contoh data peserta.
+Perintah ini mengisi 4 role, 8 akun, dan 5 contoh data peserta.
 
 **7. Buka aplikasi**
 
@@ -115,6 +115,7 @@ http://localhost/internapps/public/
 
 | Username | Password | Role |
 | --- | --- | --- |
+| `superadmin` | `super123` | Superadmin |
 | `admin` | `admin123` | Admin |
 | `staff` | `staff123` | Staff |
 | `peserta1` | `peserta123` | Peserta |
@@ -176,7 +177,9 @@ sebagai admin atau staff lewat halaman ini.
 
 ### 3. Alur Admin
 
-Admin memegang akses penuh.
+Admin memegang akses penuh. Alur di bawah berlaku sama untuk **superadmin** —
+perbedaannya hanya menyangkut pengelolaan akun superadmin, dijelaskan di
+[Beda Superadmin dengan Admin](#beda-superadmin-dengan-admin).
 
 **Melihat ringkasan**
 
@@ -229,8 +232,9 @@ ketika peserta mendaftarkan akunnya sendiri lewat halaman **Daftar**.
 **Mengelola pengguna aplikasi**
 
 1. Klik **Data Pengguna** di sidebar
-2. **Tambah Pengguna** untuk membuat akun baru — di sini role dapat dipilih bebas
-   (admin, staff, atau peserta)
+2. **Tambah Pengguna** untuk membuat akun baru — role dapat dipilih bebas
+   (admin, staff, atau peserta). Pilihan **superadmin** hanya muncul kalau Anda
+   sendiri masuk sebagai superadmin
 3. Ikon **pensil** untuk mengubah, ikon **silang (✕)** untuk menghapus
 
 Ada dua pembatasan yang sengaja dipasang:
@@ -316,21 +320,47 @@ otomatis. Ini berlaku sama untuk admin, staff, maupun peserta.
 
 ## Peta Halaman dan Hak Akses
 
-| Halaman | Alamat | Admin | Staff | Peserta |
-| --- | --- | :---: | :---: | :---: |
-| Login | `/login` | — | — | — |
-| Daftar akun | `/register` | — | — | — |
-| Dashboard | `/dashboard` | ✅ | ✅ | ✅ |
-| Profil saya | `/profil` | ✅ | ✅ | ✅ |
-| Daftar pengguna | `/users` | ✅ | ❌ | ❌ |
-| Tambah / ubah / hapus pengguna | `/users/...` | ✅ | ❌ | ❌ |
-| Daftar peserta | `/peserta` | ✅ | ✅ | ❌ |
-| Tambah peserta | `/peserta/create` | ✅ | ✅ | ❌ |
-| Detail peserta | `/peserta/detail/{id}` | ✅ | ✅ | ❌ |
-| Ubah peserta | `/peserta/edit/{id}` | ✅ | ✅ | ❌ |
-| Hapus peserta | `/peserta/delete/{id}` | ✅ | ❌ | ❌ |
-| Data magang saya | `/data-saya` | ❌ | ❌ | ✅ |
-| Logout | `/logout` | ✅ | ✅ | ✅ |
+| Halaman | Alamat | Superadmin | Admin | Staff | Peserta |
+| --- | --- | :---: | :---: | :---: | :---: |
+| Login | `/login` | — | — | — | — |
+| Daftar akun | `/register` | — | — | — | — |
+| Dashboard | `/dashboard` | ✅ | ✅ | ✅ | ✅ |
+| Profil saya | `/profil` | ✅ | ✅ | ✅ | ✅ |
+| Daftar pengguna | `/users` | ✅ | ✅ | ❌ | ❌ |
+| Tambah / ubah / hapus pengguna | `/users/...` | ✅ | ✅ | ❌ | ❌ |
+| Daftar peserta | `/peserta` | ✅ | ✅ | ✅ | ❌ |
+| Tambah peserta | `/peserta/create` | ✅ | ✅ | ✅ | ❌ |
+| Detail peserta | `/peserta/detail/{id}` | ✅ | ✅ | ✅ | ❌ |
+| Ubah peserta | `/peserta/edit/{id}` | ✅ | ✅ | ✅ | ❌ |
+| Hapus peserta | `/peserta/delete/{id}` | ✅ | ✅ | ❌ | ❌ |
+| Data magang saya | `/data-saya` | ❌ | ❌ | ❌ | ✅ |
+| Logout | `/logout` | ✅ | ✅ | ✅ | ✅ |
+
+### Beda Superadmin dengan Admin
+
+Keduanya membuka halaman yang sama persis. Bedanya hanya pada perlakuan terhadap
+**akun superadmin itu sendiri**:
+
+| Tindakan | Superadmin | Admin |
+| --- | :---: | :---: |
+| Mengelola akun staff dan peserta | ✅ | ✅ |
+| Mengelola akun admin | ✅ | ✅ |
+| Mengubah atau menghapus akun **superadmin** | ✅ | ❌ |
+| Memberikan role **superadmin** kepada akun lain | ✅ | ❌ |
+
+Pembatasan ini mencegah admin yang baru diangkat menyingkirkan pemilik aplikasi.
+Tanpa itu, siapa pun yang sekali saja diberi status admin dapat menghapus akun yang
+mengangkatnya.
+
+Larangan mengubah akun superadmin berlaku menyeluruh, termasuk **mengganti
+passwordnya** — sebab kalau admin dapat memasang password baru pada akun superadmin,
+ia tinggal masuk memakai password itu.
+
+Dua pengaman tambahan berlaku untuk semua role:
+
+- Tidak seorang pun dapat menghapus akun yang sedang ia pakai sendiri
+- Superadmin terakhir tidak dapat dihapus maupun diturunkan rolenya, supaya aplikasi
+  tidak pernah kehilangan pemiliknya
 
 Menu yang tidak boleh diakses tidak ditampilkan di sidebar. Namun penyembunyian menu
 itu bukan pengamannya — pembatasan yang sebenarnya berada pada *filter* di tiap route,

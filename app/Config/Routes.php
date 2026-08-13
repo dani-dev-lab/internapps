@@ -37,7 +37,7 @@ $routes->group('', ['filter' => 'auth'], static function (RouteCollection $route
 // Pengelolaan pengguna aplikasi — khusus admin.
 // Menghapus dan menyimpan memakai POST, bukan GET, supaya terlindungi token
 // CSRF dan tidak bisa terpicu hanya karena sebuah alamat dibuka.
-$routes->group('users', ['filter' => 'role:admin'], static function (RouteCollection $routes): void {
+$routes->group('users', ['filter' => 'role:superadmin,admin'], static function (RouteCollection $routes): void {
     $routes->get('/', 'User::index');
     $routes->get('create', 'User::create');
     $routes->post('/', 'User::store');
@@ -47,7 +47,7 @@ $routes->group('users', ['filter' => 'role:admin'], static function (RouteCollec
 });
 
 // Pengelolaan peserta magang — admin dan staff.
-$routes->group('peserta', ['filter' => 'role:admin,staff'], static function (RouteCollection $routes): void {
+$routes->group('peserta', ['filter' => 'role:superadmin,admin,staff'], static function (RouteCollection $routes): void {
     $routes->get('/', 'Peserta::index');
     $routes->get('create', 'Peserta::create');
     $routes->post('/', 'Peserta::store');
@@ -59,7 +59,7 @@ $routes->group('peserta', ['filter' => 'role:admin,staff'], static function (Rou
 // Menghapus peserta dipisah ke grup khusus admin. Staff boleh menambah dan
 // mengubah, tapi tidak menghapus — penghapusan permanen dan ikut membuang
 // berkas fotonya.
-$routes->group('peserta', ['filter' => 'role:admin'], static function (RouteCollection $routes): void {
+$routes->group('peserta', ['filter' => 'role:superadmin,admin'], static function (RouteCollection $routes): void {
     $routes->post('delete/(:num)', 'Peserta::delete/$1');
 });
 

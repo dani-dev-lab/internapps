@@ -59,15 +59,28 @@
 							<td>
 								<?php
 								$warnaRole = match ($u['nama_role']) {
-								    'admin'   => 'badge-secondary',
-								    'staff'   => 'badge-info',
-								    'peserta' => 'badge-success',
-								    default   => 'badge-light',
+								    'superadmin' => 'badge-primary',
+								    'admin'      => 'badge-secondary',
+								    'staff'      => 'badge-info',
+								    'peserta'    => 'badge-success',
+								    default      => 'badge-light',
 								};
+
+								// Baris superadmin terkunci bagi admin biasa. Penolakan yang
+								// sebenarnya ada di controller; ini supaya tombolnya tidak
+								// ditampilkan padahal pasti ditolak.
+								$terkunci = $u['nama_role'] === 'superadmin' && ! $sayaSuperadmin;
 								?>
 								<span class="badge <?= $warnaRole ?>"><?= esc(ucfirst($u['nama_role'])) ?></span>
 							</td>
 							<td class="text-nowrap text-center align-middle">
+								<?php if ($terkunci): ?>
+									<span class="text-muted p-1 d-inline-block"
+										data-toggle="tooltip"
+										title="Akun superadmin hanya dapat dikelola oleh superadmin sendiri">
+										<i class="fas fa-shield-alt"></i>
+									</span>
+								<?php else: ?>
 								<a href="<?= base_url('users/edit/' . $u['id']) ?>"
 									class="btn btn-link btn-primary btn-lg p-1"
 									title="Ubah">
@@ -96,6 +109,7 @@
 										title="Akun yang sedang Anda pakai tidak dapat dihapus">
 										<i class="fas fa-lock"></i>
 									</span>
+								<?php endif; ?>
 								<?php endif; ?>
 							</td>
 						</tr>

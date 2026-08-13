@@ -7,8 +7,19 @@ use App\Models\UserModel;
 use CodeIgniter\HTTP\RedirectResponse;
 
 /**
- * Pengelolaan pengguna aplikasi. Hanya untuk role admin — pembatasannya
- * dipasang di app/Config/Routes.php lewat filter 'role:admin'.
+ * Pengelolaan pengguna aplikasi. Untuk role superadmin dan admin —
+ * pembatasannya dipasang di app/Config/Routes.php lewat filter role.
+ *
+ * Aturan tambahan soal superadmin, semuanya ditegakkan di controller ini:
+ *
+ *  1. Akun superadmin tidak dapat diubah maupun dihapus oleh admin biasa.
+ *     Termasuk mengubah passwordnya — kalau ini dibiarkan, admin bisa
+ *     memasang password baru lalu masuk sebagai superadmin.
+ *  2. Hanya superadmin yang boleh memberikan role superadmin kepada akun
+ *     lain, supaya admin tidak bisa mencetak superadmin baru.
+ *  3. Superadmin terakhir tidak dapat dihapus atau diturunkan rolenya,
+ *     bahkan oleh sesama superadmin, supaya aplikasi tidak pernah
+ *     kehilangan pemiliknya.
  */
 class User extends BaseController
 {
@@ -21,11 +32,51 @@ class User extends BaseController
         $this->roleModel = new RoleModel();
     }
 
+    /**
+     * Apakah yang sedang masuk adalah superadmin.
+     */
+    private function sayaSuperadmin(): bool
+    {
+        return session('nama_role') === 'superadmin';
+    }
+
+    /**
+     * Nama role dari sebuah id role. Null kalau rolenya tidak ada.
+     */
+    private function namaRole(int $roleId): ?string
+    {
+        $role = $this->roleModel->find($roleId);
+
+        return $role === null ? null : $role['nama_role'];
+    }
+
+    /**
+     * Daftar role yang boleh dipilih di formulir.
+     *
+     * Admin biasa tidak ditawari pilihan superadmin. Ini hanya membereskan
+     * tampilan — penolakan yang sebenarnya tetap ada di store() dan update(),
+     * karena isian formulir bisa saja dikirim langsung tanpa lewat halaman.
+     */
+    private function pilihanRole(): array
+    {
+        $roles = $this->roleModel->orderBy('nama_role', 'ASC')->findAll();
+
+        if ($this->sayaSuperadmin()) {
+            return $roles;
+        }
+
+        return array_values(array_filter(
+            $roles,
+            static fn (array $r): bool => $r['nama_role'] !== 'superadmin'
+        ));
+    }
+
     public function index(): string
     {
         return view('user/index', [
-            'page_title' => 'Data Pengguna',
-            'users'      => $this->userModel->denganRole()->orderBy('users.id', 'ASC')->findAll(),
+            'page_title'      => 'Data Pengguna',
+            'users'           => $this->userModel->denganRole()->orderBy('users.id', 'ASC')->findAll(),
+            'sayaSuperadmin'  => $this->sayaSuperadmin(),
         ]);
     }
 
@@ -36,7 +87,7 @@ class User extends BaseController
         // bukan data view — data diwarisi dari view induknya.
         return view('user/create', [
             'page_title' => 'Tambah Pengguna',
-            'roles'      => $this->roleModel->orderBy('nama_role', 'ASC')->findAll(),
+            'roles'      => $this->pilihanRole(),
             'aksi'       => base_url('users'),
             'user'       => null,
             'tombol'     => 'Simpan Pengguna',
@@ -45,6 +96,14 @@ class User extends BaseController
 
     public function store(): RedirectResponse
     {
+        // Hanya superadmin yang boleh mencetak superadmin baru.
+        if ($this->namaRole((int) $this->request->getPost('role_id')) === 'superadmin'
+            && ! $this->sayaSuperadmin()) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Hanya superadmin yang dapat memberikan role superadmin.');
+        }
+
         $data = [
             'role_id'       => $this->request->getPost('role_id'),
             'username'      => trim((string) $this->request->getPost('username')),
@@ -65,17 +124,22 @@ class User extends BaseController
 
     public function edit(int $id): string|RedirectResponse
     {
-        $user = $this->userModel->find($id);
+        $user = $this->userModel->cariDenganRole($id);
 
         if ($user === null) {
             return redirect()->to(base_url('users'))
                 ->with('error', 'Pengguna yang ingin diubah tidak ditemukan.');
         }
 
+        if ($user['nama_role'] === 'superadmin' && ! $this->sayaSuperadmin()) {
+            return redirect()->to(base_url('users'))
+                ->with('error', 'Akun superadmin hanya dapat diubah oleh superadmin sendiri.');
+        }
+
         return view('user/edit', [
             'page_title' => 'Ubah Pengguna',
             'user'       => $user,
-            'roles'      => $this->roleModel->orderBy('nama_role', 'ASC')->findAll(),
+            'roles'      => $this->pilihanRole(),
             'aksi'       => base_url('users/update/' . $user['id']),
             'tombol'     => 'Simpan Perubahan',
         ]);
@@ -83,7 +147,7 @@ class User extends BaseController
 
     public function update(int $id): RedirectResponse
     {
-        $user = $this->userModel->find($id);
+        $user = $this->userModel->cariDenganRole($id);
 
         if ($user === null) {
             return redirect()->to(base_url('users'))
@@ -91,6 +155,31 @@ class User extends BaseController
         }
 
         $roleBaru = (int) $this->request->getPost('role_id');
+
+        // Admin biasa tidak boleh menyentuh akun superadmin sama sekali —
+        // bukan hanya rolenya. Kalau ia bisa mengganti password superadmin,
+        // ia tinggal masuk memakai password itu.
+        if ($user['nama_role'] === 'superadmin' && ! $this->sayaSuperadmin()) {
+            return redirect()->to(base_url('users'))
+                ->with('error', 'Akun superadmin hanya dapat diubah oleh superadmin sendiri.');
+        }
+
+        // Hanya superadmin yang boleh menaikkan akun lain menjadi superadmin.
+        if ($this->namaRole($roleBaru) === 'superadmin' && ! $this->sayaSuperadmin()) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Hanya superadmin yang dapat memberikan role superadmin.');
+        }
+
+        // Superadmin terakhir tidak boleh diturunkan rolenya, karena sesudah
+        // itu tidak ada lagi akun yang dapat mengelola superadmin.
+        if ($user['nama_role'] === 'superadmin'
+            && $roleBaru !== (int) $user['role_id']
+            && $this->userModel->hitungPerRole('superadmin') <= 1) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Ini superadmin terakhir. Angkat superadmin lain dulu sebelum menurunkan rolenya.');
+        }
 
         // Admin yang menurunkan role-nya sendiri akan langsung kehilangan
         // akses ke halaman ini dan tidak bisa mengembalikannya.
@@ -143,7 +232,21 @@ class User extends BaseController
                 ->with('error', 'Anda tidak dapat menghapus akun yang sedang Anda pakai.');
         }
 
-        // Pengaman 2: kalau admin terakhir dihapus, tidak ada lagi yang bisa
+        // Pengaman 2: admin biasa tidak boleh menghapus superadmin. Inilah
+        // yang mencegah admin baru "mengkudeta" pemilik aplikasi.
+        if ($user['nama_role'] === 'superadmin' && ! $this->sayaSuperadmin()) {
+            return redirect()->to(base_url('users'))
+                ->with('error', 'Akun superadmin tidak dapat dihapus oleh admin.');
+        }
+
+        // Pengaman 3: superadmin terakhir tidak boleh dihapus, bahkan oleh
+        // sesama superadmin.
+        if ($user['nama_role'] === 'superadmin' && $this->userModel->hitungPerRole('superadmin') <= 1) {
+            return redirect()->to(base_url('users'))
+                ->with('error', 'Ini superadmin terakhir. Angkat superadmin lain dulu sebelum menghapusnya.');
+        }
+
+        // Pengaman 4: kalau admin terakhir dihapus, tidak ada lagi yang bisa
         // mengelola pengguna dan aplikasi terkunci selamanya.
         if ($user['nama_role'] === 'admin' && $this->userModel->hitungPerRole('admin') <= 1) {
             return redirect()->to(base_url('users'))

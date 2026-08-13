@@ -9,15 +9,15 @@ class RoleSeeder extends Seeder
 {
     public function run(): void
     {
-        if ($this->db->table('roles')->countAllResults() > 0) {
-            CLI::write('RoleSeeder dilewati: tabel roles sudah berisi data.', 'yellow');
-
-            return;
-        }
-
         $now = date('Y-m-d H:i:s');
 
-        $this->db->table('roles')->insertBatch([
+        $daftar = [
+            [
+                'nama_role'  => 'superadmin',
+                'deskripsi'  => 'Pemilik aplikasi. Sama seperti admin, tetapi tidak dapat dihapus atau diturunkan rolenya oleh admin biasa.',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
             [
                 'nama_role'  => 'admin',
                 'deskripsi'  => 'Akses penuh: mengelola pengguna aplikasi dan seluruh data peserta magang.',
@@ -36,8 +36,33 @@ class RoleSeeder extends Seeder
                 'created_at' => $now,
                 'updated_at' => $now,
             ],
-        ]);
+        ];
 
-        CLI::write('RoleSeeder: 3 role ditambahkan.', 'green');
+        // Diperiksa satu per satu, bukan sekadar "lewati kalau tabel sudah ada
+        // isinya". Dengan begini, database yang sudah berjalan sejak sebelum
+        // role superadmin ada tetap bisa mendapatkannya cukup dengan
+        // menjalankan seeder ini lagi, tanpa menghapus role yang sudah dipakai.
+        $baru = 0;
+
+        foreach ($daftar as $role) {
+            $sudahAda = $this->db->table('roles')
+                ->where('nama_role', $role['nama_role'])
+                ->countAllResults() > 0;
+
+            if ($sudahAda) {
+                continue;
+            }
+
+            $this->db->table('roles')->insert($role);
+            $baru++;
+        }
+
+        if ($baru === 0) {
+            CLI::write('RoleSeeder: semua role sudah tersedia, tidak ada yang ditambahkan.', 'yellow');
+
+            return;
+        }
+
+        CLI::write('RoleSeeder: ' . $baru . ' role ditambahkan.', 'green');
     }
 }
