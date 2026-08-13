@@ -1,10 +1,10 @@
 <?php
 /**
- * Dashboard admin dan staff.
+ * Dashboard superadmin, admin, dan staff.
  *
  * @var array      $statistik Jumlah peserta per status
  * @var array      $sedang    Peserta yang magangnya sedang berjalan
- * @var array|null $pengguna  Ringkasan akun, hanya diisi untuk role admin
+ * @var array|null $pengguna  Ringkasan akun, hanya diisi untuk superadmin dan admin
  */
 ?>
 <?= $this->extend('layouts/main') ?>

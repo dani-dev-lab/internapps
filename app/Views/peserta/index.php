@@ -8,7 +8,12 @@
 <?= $this->extend('layouts/main') ?>
 
 <?= $this->section('content') ?>
-<?php $bolehHapus = session('nama_role') === 'admin'; ?>
+<?php
+/**
+ * @var array $peserta
+ * @var bool  $bolehHapus Dikirim controller, sejalan dengan filter route.
+ */
+?>
 
 <div class="card card-round">
 	<div class="card-header">

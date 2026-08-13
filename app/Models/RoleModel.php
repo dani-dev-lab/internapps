@@ -26,18 +26,4 @@ class RoleModel extends Model
             'is_unique'  => 'Nama role ini sudah digunakan.',
         ],
     ];
-
-    /**
-     * Daftar role untuk isian dropdown: [id => nama_role].
-     */
-    public function untukPilihan(): array
-    {
-        $hasil = [];
-
-        foreach ($this->orderBy('nama_role', 'ASC')->findAll() as $role) {
-            $hasil[$role['id']] = $role['nama_role'];
-        }
-
-        return $hasil;
-    }
 }

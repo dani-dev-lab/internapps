@@ -10,9 +10,9 @@ use CodeIgniter\HTTP\RedirectResponse;
 /**
  * Pengelolaan data peserta magang.
  *
- * Melihat, menambah, dan mengubah: admin dan staff.
- * Menghapus: admin saja — penghapusan bersifat permanen dan sekaligus
- * membuang berkas fotonya, jadi haknya dipersempit.
+ * Melihat, menambah, dan mengubah: superadmin, admin, dan staff.
+ * Menghapus: superadmin dan admin saja — penghapusan bersifat permanen dan
+ * sekaligus membuang berkas fotonya, jadi haknya dipersempit.
  * dataSaya(): khusus role peserta, hanya menampilkan datanya sendiri.
  *
  * Semua pembatasan itu dipasang di app/Config/Routes.php lewat filter role.
@@ -39,6 +39,11 @@ class Peserta extends BaseController
             'peserta'    => $this->pesertaModel->denganAkun()
                 ->orderBy('peserta_magang.nama_peserta', 'ASC')
                 ->findAll(),
+            // Ditentukan di sini, bukan di dalam view, supaya daftar role yang
+            // boleh menghapus hanya ditulis di satu tempat dan tidak mudah
+            // tertinggal saat daftar rolenya berubah. Harus sejalan dengan
+            // filter route 'role:superadmin,admin' pada peserta/delete.
+            'bolehHapus' => in_array(session('nama_role'), ['superadmin', 'admin'], true),
         ]);
     }
 

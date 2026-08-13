@@ -218,10 +218,11 @@ menentukan akun mana yang berhak melihat data magang tersebut lewat menu
 **Data Magang Saya**.
 
 - Isinya hanya akun ber-role **peserta** yang **belum tertaut** ke data mana pun.
-  Akun admin dan staff tidak pernah muncul di sini.
+  Akun ber-role selain peserta tidak pernah muncul di sini.
 - Pilihan **"Tanpa akun login"** berarti datanya tercatat tetapi belum bisa dilihat
-  siapa pun selain admin dan staff. Ini keadaan yang normal: data peserta biasanya
-  didaftarkan lebih dulu, akunnya menyusul.
+  oleh peserta yang bersangkutan — hanya pengelola aplikasi yang dapat melihatnya.
+  Ini keadaan yang normal: data peserta biasanya didaftarkan lebih dulu, akunnya
+  menyusul.
 - Saat mengubah peserta, akun yang sedang tertaut tetap muncul terpilih. Mengembalikan
   pilihan ke *"Tanpa akun login"* akan memutus tautannya — akunnya tidak terhapus,
   hanya kehilangan akses ke data magang itu.

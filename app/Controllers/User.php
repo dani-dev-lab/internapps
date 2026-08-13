@@ -246,11 +246,15 @@ class User extends BaseController
                 ->with('error', 'Ini superadmin terakhir. Angkat superadmin lain dulu sebelum menghapusnya.');
         }
 
-        // Pengaman 4: kalau admin terakhir dihapus, tidak ada lagi yang bisa
-        // mengelola pengguna dan aplikasi terkunci selamanya.
-        if ($user['nama_role'] === 'admin' && $this->userModel->hitungPerRole('admin') <= 1) {
+        // Pengaman 4: jangan sampai tidak tersisa satu pun akun yang dapat
+        // mengelola pengguna. Yang dihitung adalah superadmin DAN admin,
+        // karena keduanya sama-sama berhak membuka halaman ini. Menghapus
+        // admin terakhir tidak masalah selama masih ada superadmin.
+        if ($user['nama_role'] === 'admin'
+            && $this->userModel->hitungPerRole('admin') <= 1
+            && $this->userModel->hitungPerRole('superadmin') === 0) {
             return redirect()->to(base_url('users'))
-                ->with('error', 'Ini admin terakhir. Buat admin lain dulu sebelum menghapusnya.');
+                ->with('error', 'Ini admin terakhir dan tidak ada superadmin. Buat admin lain dulu sebelum menghapusnya.');
         }
 
         // Buang juga berkas foto profilnya supaya tidak menumpuk tanpa pemilik.
