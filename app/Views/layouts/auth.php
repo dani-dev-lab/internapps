@@ -1,16 +1,3 @@
-<?php
-/**
- * Layout halaman masuk.
- *
- * Dipisah dari layouts/main.php karena halaman login tidak boleh punya sidebar,
- * navbar, maupun footer aplikasi.
- *
- * Atlantis Lite tidak menyertakan halaman login, jadi tata letaknya disusun
- * dari komponen yang sudah ada (card, form-group, btn) ditambah satu aturan
- * CSS untuk tinggi layar penuh — Bootstrap 4.1.3 bawaan template belum punya
- * kelas .min-vh-100.
- */
-?>
 <!DOCTYPE html>
 <html lang="id">
 <?= $this->include('layouts/partials/head') ?>

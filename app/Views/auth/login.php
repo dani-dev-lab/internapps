@@ -29,14 +29,6 @@
 			</div>
 		<?php endif; ?>
 
-		<?php
-		// Username dan password sengaja TIDAK diisikan otomatis oleh browser.
-		// autocomplete="off" pada form dan kolom username mencegah saran
-		// isian, sedangkan "new-password" pada kolom password adalah cara
-		// paling ampuh menghentikan pengisian otomatis — browser modern
-		// mengabaikan "off" pada kolom sandi, tapi menghormati "new-password"
-		// karena menganggapnya sandi yang sedang dibuat, bukan yang tersimpan.
-		?>
 		<?= form_open(base_url('login'), ['autocomplete' => 'off']) ?>
 			<div class="form-group">
 				<label for="username">Username</label>

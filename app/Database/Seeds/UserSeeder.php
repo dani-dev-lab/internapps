@@ -5,15 +5,6 @@ namespace App\Database\Seeds;
 use CodeIgniter\CLI\CLI;
 use CodeIgniter\Database\Seeder;
 
-/**
- * Akun awal aplikasi.
- *
- * Semua password disimpan sebagai hash password_hash() dengan PASSWORD_DEFAULT,
- * tidak pernah sebagai teks biasa. Password polos di bawah hanya dipakai sekali
- * saat proses hashing dan tidak ikut tersimpan ke database.
- *
- * Ganti password akun-akun ini sebelum aplikasi dipakai di luar localhost.
- */
 class UserSeeder extends Seeder
 {
     public function run(): void
@@ -24,8 +15,6 @@ class UserSeeder extends Seeder
             return;
         }
 
-        // Ambil id role berdasarkan namanya, jangan menebak angka 1/2/3 —
-        // supaya seeder tetap benar walau urutan role berubah.
         $role = [];
 
         foreach ($this->db->table('roles')->get()->getResultArray() as $r) {
@@ -34,12 +23,7 @@ class UserSeeder extends Seeder
 
         $now = date('Y-m-d H:i:s');
 
-        // Akun peserta di bawah sengaja dinamai "Peserta Contoh" dan bukan nama
-        // orang, supaya tidak ada yang mengiranya peserta magang sungguhan.
-        // Lihat keterangan lengkap di PesertaMagangSeeder.
         $akun = [
-            // Pemilik aplikasi. Akun inilah yang tidak dapat dihapus atau
-            // diturunkan rolenya oleh admin biasa.
             ['superadmin', 'super123', 'Super Admin Internapps',   'superadmin'],
             ['admin',    'admin123',   'Administrator Internapps', 'admin'],
             ['staff',    'staff123',   'Staff Kepegawaian',        'staff'],

@@ -4,19 +4,6 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-/**
- * Tabel peserta_magang — data peserta magang.
- *
- * Catatan penting soal 'nik': tipenya CHAR(16), bukan BIGINT. NIK bisa diawali
- * angka 0 dan angka itu akan hilang kalau disimpan sebagai bilangan.
- *
- * Tidak ada kolom 'status'. Status (Belum Mulai / Sedang Magang / Selesai)
- * dihitung dari perbandingan tanggal hari ini dengan tanggal mulai dan
- * berakhir, sehingga mustahil terjadi status yang tidak cocok dengan tanggal.
- *
- * 'user_id' boleh NULL: data peserta bisa didaftarkan lebih dulu oleh admin
- * sebelum (atau tanpa) akun login dibuatkan untuknya.
- */
 class CreatePesertaMagangTable extends Migration
 {
     public function up(): void
@@ -81,7 +68,6 @@ class CreatePesertaMagangTable extends Migration
         $this->forge->addUniqueKey('nik');
         $this->forge->addUniqueKey('user_id');
 
-        // SET NULL: kalau akun login dihapus, data magangnya tetap tersimpan.
         $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'SET NULL');
 
         $this->forge->createTable('peserta_magang');

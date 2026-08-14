@@ -1,8 +1,7 @@
 <?php
 /**
- * Daftar pengguna aplikasi.
- *
- * @var array $users Seluruh pengguna beserta nama role-nya
+ * @var array $users          Seluruh pengguna beserta nama role-nya
+ * @var bool  $sayaSuperadmin Benar bila yang sedang login berrole superadmin
  */
 ?>
 <?= $this->extend('layouts/main') ?>
@@ -22,12 +21,9 @@
 	</div>
 	<div class="card-body">
 		<div class="table-responsive">
-			<?php // Lebar kolom ditulis sebagai persen di <th> dan dipakai apa adanya
-					// berkat table-layout: fixed. Lebar TIDAK ditulis ulang di columnDefs,
-					// karena DataTable akan menimpanya dan hasilnya saling bertabrakan. ?>
-				<table id="tabel-pengguna"
-					class="display table table-striped table-hover"
-					style="table-layout: fixed; width: 100%;">
+			<table id="tabel-pengguna"
+				class="display table table-striped table-hover"
+				style="table-layout: fixed; width: 100%;">
 				<thead>
 					<tr>
 						<th style="width: 6%;" class="text-nowrap">No</th>
@@ -66,9 +62,6 @@
 								    default      => 'badge-light',
 								};
 
-								// Baris superadmin terkunci bagi admin biasa. Penolakan yang
-								// sebenarnya ada di controller; ini supaya tombolnya tidak
-								// ditampilkan padahal pasti ditolak.
 								$terkunci = $u['nama_role'] === 'superadmin' && ! $sayaSuperadmin;
 								?>
 								<span class="badge <?= $warnaRole ?>"><?= esc(ucfirst($u['nama_role'])) ?></span>
@@ -100,10 +93,6 @@
 										</button>
 									</form>
 								<?php else: ?>
-									<?php // Akun yang sedang dipakai tidak boleh dihapus. Ditampilkan
-											// sebagai ikon gembok abu-abu, bukan tombol hapus yang
-											// dinonaktifkan, supaya jelas ini keterangan — bukan tombol
-											// yang kebetulan sedang rusak. ?>
 									<span class="text-muted p-1 d-inline-block"
 										data-toggle="tooltip"
 										title="Akun yang sedang Anda pakai tidak dapat dihapus">
@@ -127,7 +116,6 @@
 	$(document).ready(function () {
 		$('#tabel-pengguna').DataTable({
 			pageLength: 10,
-			// Kolom No, Foto, dan Aksi tidak masuk akal untuk diurutkan.
 			columnDefs: [
 				{ orderable: false, targets: [0, 1, 5] }
 			],
@@ -148,8 +136,6 @@
 			}
 		});
 
-		// Konfirmasi hapus memakai SweetAlert bawaan Atlantis. Form baru
-		// dikirim setelah pengguna benar-benar menyetujuinya.
 		$('.form-hapus').on('submit', function (e) {
 			e.preventDefault();
 

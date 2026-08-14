@@ -1,7 +1,5 @@
 <?php
 /**
- * Bagian <head>: judul halaman, favicon, font, dan CSS Atlantis.
- *
  * @var string $page_title Judul halaman, opsional (ada nilai cadangan)
  */
 ?>
@@ -12,7 +10,6 @@
 	<meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
 	<link rel="icon" href="<?= base_url('assets/img/internapps/logo-mark.svg') ?>" type="image/svg+xml"/>
 
-	<!-- Fonts and icons -->
 	<script src="<?= base_url('assets/js/plugin/webfont/webfont.min.js') ?>"></script>
 	<script>
 		WebFont.load({
@@ -24,18 +21,12 @@
 		});
 	</script>
 
-	<!-- CSS Files -->
 	<link rel="stylesheet" href="<?= base_url('assets/css/bootstrap.min.css') ?>">
 	<link rel="stylesheet" href="<?= base_url('assets/css/atlantis.min.css') ?>">
 
 	<?php
-	// Penanda versi diambil dari waktu ubah terakhir berkasnya. Tanpa ini,
-	// browser bisa terus memakai salinan CSS lama yang tersimpan di cache,
-	// sehingga perubahan tampilan tidak kelihatan sampai cache dibersihkan
-	// manual. Angkanya berubah sendiri setiap kali berkas CSS disunting.
 	$cssKustom = FCPATH . 'assets/css/internapps.css';
 	$versiCss  = is_file($cssKustom) ? filemtime($cssKustom) : '1';
 	?>
-	<!-- Penyesuaian warna komponen yang tidak punya varian indigo di Atlantis -->
 	<link rel="stylesheet" href="<?= base_url('assets/css/internapps.css') ?>?v=<?= esc($versiCss, 'attr') ?>">
 </head>

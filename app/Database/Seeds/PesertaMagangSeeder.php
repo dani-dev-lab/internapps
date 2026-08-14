@@ -5,28 +5,6 @@ namespace App\Database\Seeds;
 use CodeIgniter\CLI\CLI;
 use CodeIgniter\Database\Seeder;
 
-/**
- * ==========================================================================
- *  DATA CONTOH — BUKAN DATA PESERTA MAGANG YANG SEBENARNYA
- * ==========================================================================
- *
- *  Isi array $peserta di bawah adalah data contoh untuk keperluan pengujian
- *  dan demonstrasi di komputer yang databasenya masih kosong.
- *
- *  Nama, NIK, universitas, fakultas, dan program studinya sengaja ditulis
- *  terang-terangan sebagai "Contoh" supaya tidak mungkin dikira data peserta
- *  magang sungguhan.
- *
- *  Data peserta yang asli TIDAK dimasukkan lewat berkas ini, melainkan lewat
- *  aplikasi: masuk sebagai admin, lalu buka menu Data Peserta Magang dan
- *  tekan Tambah Peserta. Alasannya, NIK adalah data pribadi dan tidak
- *  seharusnya ikut tersimpan di dalam berkas kode program yang bisa tersalin
- *  ke mana-mana.
- * ==========================================================================
- *
- * Tanggal sengaja disebar supaya ketiga status magang muncul dan bisa diuji:
- * ada yang belum mulai, sedang berjalan, dan sudah selesai.
- */
 class PesertaMagangSeeder extends Seeder
 {
     public function run(): void
@@ -37,8 +15,6 @@ class PesertaMagangSeeder extends Seeder
             return;
         }
 
-        // Petakan username akun peserta ke id-nya, supaya data magang bisa
-        // ditautkan ke akun login yang benar tanpa menebak id.
         $userId = [];
 
         foreach ($this->db->table('users')->select('id, username')->get()->getResultArray() as $u) {

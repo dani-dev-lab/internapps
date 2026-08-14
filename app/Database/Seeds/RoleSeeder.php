@@ -38,10 +38,6 @@ class RoleSeeder extends Seeder
             ],
         ];
 
-        // Diperiksa satu per satu, bukan sekadar "lewati kalau tabel sudah ada
-        // isinya". Dengan begini, database yang sudah berjalan sejak sebelum
-        // role superadmin ada tetap bisa mendapatkannya cukup dengan
-        // menjalankan seeder ini lagi, tanpa menghapus role yang sudah dipakai.
         $baru = 0;
 
         foreach ($daftar as $role) {

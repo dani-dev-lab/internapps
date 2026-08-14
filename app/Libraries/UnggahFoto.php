@@ -3,23 +3,10 @@
 namespace App\Libraries;
 
 use CodeIgniter\HTTP\Files\UploadedFile;
-
-/**
- * Penanganan unggahan foto.
- *
- * Dipakai dua tempat dengan folder berbeda: foto resmi peserta magang
- * (uploads/peserta) dan foto profil akun (uploads/avatar). Dikumpulkan di satu
- * kelas supaya aturan keamanannya tidak ditulis ulang dan tidak berbeda-beda.
- */
 class UnggahFoto
 {
-    /** Batas ukuran berkas dalam kilobyte. */
     public const MAKS_KB = 2048;
 
-    /**
-     * Tipe berkas diperiksa dari isinya (MIME), bukan dari ekstensi nama
-     * berkas. Berkas skrip yang namanya diubah jadi .jpg tetap tertolak.
-     */
     public const MIME_DIIZINKAN = 'image/jpg,image/jpeg,image/png,image/webp';
 
     private string $folder;
@@ -29,13 +16,6 @@ class UnggahFoto
         $this->folder = trim($folder, '/\\');
     }
 
-    /**
-     * Aturan validasi CI4 untuk kolom unggahan.
-     *
-     * Tanpa 'uploaded[...]', aturan file CI4 meloloskan keadaan "tidak ada
-     * berkas dikirim" — itu memang yang diinginkan saat mengubah data tanpa
-     * mengganti fotonya.
-     */
     public function aturanValidasi(string $kolom, bool $wajib = false): string
     {
         $aturan = [];
@@ -65,10 +45,6 @@ class UnggahFoto
         ];
     }
 
-    /**
-     * Simpan berkas dan kembalikan nama berkas barunya, atau null kalau
-     * memang tidak ada berkas yang dikirim.
-     */
     public function simpan(?UploadedFile $berkas): ?string
     {
         if ($berkas === null || ! $berkas->isValid() || $berkas->hasMoved()) {
@@ -81,9 +57,6 @@ class UnggahFoto
             mkdir($tujuan, 0755, true);
         }
 
-        // getRandomName() membuang nama asli dari pengguna. Nama asli bisa
-        // berisi karakter yang menyulitkan, atau sengaja dibuat untuk menimpa
-        // berkas lain yang sudah ada.
         $nama = $berkas->getRandomName();
 
         $berkas->move($tujuan, $nama);
@@ -97,8 +70,6 @@ class UnggahFoto
             return;
         }
 
-        // basename() menutup upaya keluar dari folder lewat nama seperti
-        // "../../app/Config/App.php".
         $berkas = $this->jalurFolder() . basename($namaBerkas);
 
         if (is_file($berkas)) {

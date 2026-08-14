@@ -1,12 +1,3 @@
-<?php
-/**
- * Layout utama Atlantis Lite.
- * File ini sengaja dibuat pendek — isi aslinya dipecah ke dalam
- * app/Views/layouts/partials/, supaya tiap bagian (head, header,
- * sidebar, content, footer, scripts) gampang dicari dan diedit
- * tanpa harus scroll satu file panjang.
- */
-?>
 <!DOCTYPE html>
 <html lang="en">
 <?= $this->include('layouts/partials/head') ?>

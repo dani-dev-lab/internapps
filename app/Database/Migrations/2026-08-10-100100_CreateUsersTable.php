@@ -4,16 +4,6 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-/**
- * Tabel users — akun pengguna aplikasi (admin, staff, maupun peserta).
- *
- * Peserta memakai tabel yang sama dengan role 'peserta', bukan sistem
- * autentikasi terpisah, supaya hanya ada satu alur login dan satu session.
- *
- * Kolom 'password' sengaja VARCHAR(255): hash bcrypt hanya 60 karakter, tapi
- * ukuran ini menyisakan ruang kalau nanti pindah ke algoritma yang lebih
- * panjang seperti Argon2id tanpa perlu mengubah struktur tabel.
- */
 class CreateUsersTable extends Migration
 {
     public function up(): void
@@ -61,7 +51,6 @@ class CreateUsersTable extends Migration
         $this->forge->addKey('id', true);
         $this->forge->addUniqueKey('username');
 
-        // RESTRICT: sebuah role tidak boleh dihapus selama masih ada user yang memakainya.
         $this->forge->addForeignKey('role_id', 'roles', 'id', 'CASCADE', 'RESTRICT');
 
         $this->forge->createTable('users');

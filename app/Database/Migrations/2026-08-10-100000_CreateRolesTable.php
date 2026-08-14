@@ -4,13 +4,6 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-/**
- * Tabel roles — daftar peran pengguna aplikasi.
- *
- * Dibuat sebagai tabel terpisah (bukan sekadar kolom 'role' di users) supaya
- * nama peran bisa diambil lewat JOIN tanpa memetakan angka ke teks di PHP,
- * dan penambahan peran baru cukup lewat INSERT tanpa mengubah struktur tabel.
- */
 class CreateRolesTable extends Migration
 {
     public function up(): void

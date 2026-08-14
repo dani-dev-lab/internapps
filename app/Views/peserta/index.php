@@ -1,19 +1,12 @@
 <?php
 /**
- * Daftar peserta magang.
- *
- * @var array $peserta Seluruh data peserta beserta akun yang tertaut
+ * @var array $peserta    Seluruh data peserta beserta akun yang tertaut
+ * @var bool  $bolehHapus Dikirim controller, sejalan dengan filter route
  */
 ?>
 <?= $this->extend('layouts/main') ?>
 
 <?= $this->section('content') ?>
-<?php
-/**
- * @var array $peserta
- * @var bool  $bolehHapus Dikirim controller, sejalan dengan filter route.
- */
-?>
 
 <div class="card card-round">
 	<div class="card-header">
@@ -28,19 +21,9 @@
 	</div>
 	<div class="card-body">
 		<div class="table-responsive">
-			<?php // table-layout: fixed membuat lebar kolom yang ditentukan di
-					// bawah benar-benar dipakai. Tanpa ini browser mengabaikannya
-					// dan menghitung sendiri berdasarkan isi tiap sel. ?>
 			<table id="tabel-peserta"
 				class="display table table-striped table-hover"
 				style="table-layout: fixed; width: 100%;">
-				<?php
-				// Kolom sengaja digabung: universitas menyatu dengan nama, fakultas
-				// dengan program studi, dan kedua tanggal jadi satu kolom periode.
-				// Kolom sempit diberi text-nowrap supaya tidak pecah jadi beberapa
-				// baris. Lebar tiap kolom ditulis sebagai persen di <th> supaya jumlahnya
-				// pas 100% dan dipakai apa adanya oleh table-layout: fixed.
-				?>
 				<thead>
 					<tr>
 						<th style="width: 4%;" class="text-nowrap">No</th>
@@ -65,11 +48,6 @@
 								</div>
 							</td>
 							<td class="text-nowrap align-middle"><?= esc($p['nik']) ?></td>
-							<?php // Tiap keterangan dibatasi satu baris dan dipotong dengan
-									// elipsis kalau kepanjangan, supaya tinggi seluruh baris tabel
-									// seragam. Nilai utuhnya muncul saat disorot, dan tetap lengkap
-									// di halaman detail. Baris akun selalu dirender — walau kosong —
-									// agar jumlah barisnya sama untuk semua peserta. ?>
 							<td class="align-middle">
 								<strong class="d-block text-truncate"
 									title="<?= esc($p['nama_peserta'], 'attr') ?>"><?= esc($p['nama_peserta']) ?></strong>
@@ -89,8 +67,6 @@
 								<span class="text-muted small d-block text-truncate"
 									title="<?= esc($p['nama_fakultas'], 'attr') ?>"><?= esc($p['nama_fakultas']) ?></span>
 							</td>
-							<?php // data-order memakai format Y-m-d supaya pengurutan tetap
-									// kronologis walaupun yang ditampilkan tanggal singkat. ?>
 							<td class="text-nowrap align-middle" data-order="<?= esc($p['tanggal_mulai_magang'], 'attr') ?>">
 								<?= esc(tanggal_singkat($p['tanggal_mulai_magang'])) ?>
 								<br><span class="text-muted small">s/d <?= esc(tanggal_singkat($p['tanggal_berakhir_magang'])) ?></span>
@@ -140,10 +116,6 @@
 		$('#tabel-peserta').DataTable({
 			pageLength: 10,
 			order: [[3, 'asc']],
-			// Lebar kolom sepenuhnya diatur lewat atribut style pada <th>,
-			// bukan di sini. Kalau lebar juga ditulis di columnDefs, DataTable
-			// akan menimpa nilai di <th> dan campuran px dengan persen bisa
-			// melebihi 100% sehingga kolom persen tergencet habis.
 			autoWidth: false,
 			columnDefs: [
 				{ orderable: false, targets: [0, 1, 7] }

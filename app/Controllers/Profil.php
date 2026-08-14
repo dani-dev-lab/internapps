@@ -6,13 +6,6 @@ use App\Libraries\UnggahFoto;
 use App\Models\UserModel;
 use CodeIgniter\HTTP\RedirectResponse;
 
-/**
- * Profil akun sendiri. Bisa dibuka semua role — yang diubah selalu akun yang
- * sedang masuk, diambil dari session, bukan dari angka di URL.
- *
- * Role dan hak akses sengaja tidak bisa diubah dari sini. Itu wewenang admin
- * lewat halaman Data Pengguna.
- */
 class Profil extends BaseController
 {
     protected UserModel $userModel;
@@ -28,8 +21,6 @@ class Profil extends BaseController
     {
         $user = $this->userModel->cariDenganRole($this->idSaya());
 
-        // Bisa terjadi kalau akunnya dihapus admin selagi pemiliknya masih
-        // masuk. Session-nya sudah tidak menunjuk apa pun, jadi dikeluarkan.
         if ($user === null) {
             return redirect()->to(base_url('logout'));
         }
@@ -44,9 +35,6 @@ class Profil extends BaseController
     {
         $id = $this->idSaya();
 
-        // role_id dan password sengaja tidak ikut dikirim. Aturan validasi
-        // untuk kolom yang tidak ada otomatis dilewati CodeIgniter, jadi yang
-        // diperiksa hanya kedua kolom di bawah.
         $data = [
             'username'      => trim((string) $this->request->getPost('username')),
             'nama_pengguna' => trim((string) $this->request->getPost('nama_pengguna')),
@@ -58,8 +46,6 @@ class Profil extends BaseController
                 ->with('errors', $this->userModel->errors());
         }
 
-        // Navbar dan sidebar membaca session, bukan database. Tanpa ini nama
-        // yang tampil masih yang lama sampai pengguna keluar lalu masuk lagi.
         session()->set([
             'username'      => $data['username'],
             'nama_pengguna' => $data['nama_pengguna'],
@@ -102,7 +88,6 @@ class Profil extends BaseController
                 ->with('error', 'Foto gagal disimpan.');
         }
 
-        // Foto lama baru dibuang setelah yang baru benar-benar tersimpan.
         $this->unggah->hapus($user['foto']);
 
         session()->set('foto', $namaBaru);
@@ -157,14 +142,11 @@ class Profil extends BaseController
             return redirect()->back()->with('errors', $this->validator->getErrors());
         }
 
-        // Password lama diminta supaya orang yang menemukan komputer dalam
-        // keadaan masih login tidak bisa langsung mengambil alih akunnya.
         if (! password_verify((string) $this->request->getPost('password_lama'), $user['password'])) {
             return redirect()->to(base_url('profil'))
                 ->with('error', 'Password lama tidak sesuai.');
         }
 
-        // Nilai polos di bawah di-hash oleh callback UserModel.
         $this->userModel->update($id, [
             'password' => (string) $this->request->getPost('password_baru'),
         ]);

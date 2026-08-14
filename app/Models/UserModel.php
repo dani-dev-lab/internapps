@@ -14,20 +14,9 @@ class UserModel extends Model
     protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
 
-    /**
-     * Password di-hash di sini, bukan di controller.
-     *
-     * Alasannya: kalau hashing dikerjakan controller, satu controller yang lupa
-     * memanggilnya sudah cukup untuk menyimpan password polos ke database.
-     * Ditaruh sebagai callback model, semua jalur penyimpanan pasti melewatinya.
-     */
     protected $beforeInsert = ['hashPassword'];
     protected $beforeUpdate = ['hashPassword'];
 
-    /**
-     * Aturan untuk penambahan user baru.
-     * Untuk pengubahan, pakai aturanUbah() di bawah.
-     */
     protected $validationRules = [
         'role_id'       => 'required|is_natural_no_zero',
         'username'      => 'required|alpha_dash|min_length[3]|max_length[50]|is_unique[users.username]',
@@ -56,13 +45,6 @@ class UserModel extends Model
         ],
     ];
 
-    /**
-     * Aturan untuk mengubah user yang sudah ada.
-     *
-     * Dua bedanya dari aturan tambah:
-     * 1. Username miliknya sendiri tidak dianggap duplikat.
-     * 2. Password boleh dikosongkan, artinya password lama tetap dipakai.
-     */
     public function aturanUbah(int $id): array
     {
         $aturan = $this->validationRules;
@@ -73,14 +55,6 @@ class UserModel extends Model
         return $aturan;
     }
 
-    /**
-     * Setiap pengubahan data otomatis memakai aturanUbah().
-     *
-     * Kalau pemilihan aturan diserahkan ke controller, satu controller yang
-     * lupa memanggil aturanUbah() akan membuat pengubahan selalu gagal:
-     * username miliknya sendiri dianggap duplikat, dan password kosong
-     * dianggap melanggar 'required'. Ditaruh di sini, semua jalur aman.
-     */
     public function update($id = null, $row = null): bool
     {
         $aturanAsli = $this->validationRules;
@@ -102,8 +76,6 @@ class UserModel extends Model
             return $data;
         }
 
-        // Password kosong berarti "jangan diubah" — buang dari data supaya
-        // hash kosong tidak menimpa password lama.
         if ($data['data']['password'] === '') {
             unset($data['data']['password']);
 
@@ -115,18 +87,12 @@ class UserModel extends Model
         return $data;
     }
 
-    /**
-     * Query user beserta nama role-nya. Dipakai halaman daftar pengguna.
-     */
     public function denganRole()
     {
         return $this->select('users.*, roles.nama_role')
             ->join('roles', 'roles.id = users.role_id');
     }
 
-    /**
-     * Cari satu user beserta nama role-nya. Dipakai saat login.
-     */
     public function cariUsername(string $username): ?array
     {
         return $this->denganRole()
@@ -141,12 +107,6 @@ class UserModel extends Model
             ->first();
     }
 
-    /**
-     * Akun ber-role peserta yang belum ditautkan ke data magang mana pun.
-     *
-     * $userIdSekarang dipakai saat mengubah data, supaya akun yang sedang
-     * tertaut ke data itu tetap muncul sebagai pilihan terpilih.
-     */
     public function akunPesertaBelumTertaut(?int $userIdSekarang = null): array
     {
         $terpakai = $this->db->table('peserta_magang')
@@ -172,9 +132,6 @@ class UserModel extends Model
         return $builder->orderBy('users.nama_pengguna', 'ASC')->findAll();
     }
 
-    /**
-     * Jumlah user pada suatu role. Dipakai untuk mencegah admin terakhir dihapus.
-     */
     public function hitungPerRole(string $namaRole): int
     {
         return $this->join('roles', 'roles.id = users.role_id')

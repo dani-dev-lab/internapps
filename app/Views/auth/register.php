@@ -29,10 +29,6 @@
 			</div>
 		<?php endif; ?>
 
-		<?php
-		// autocomplete dimatikan dengan alasan yang sama seperti halaman masuk:
-		// isian akun tidak boleh dilengkapi otomatis oleh browser.
-		?>
 		<?= form_open(base_url('register'), ['autocomplete' => 'off']) ?>
 
 			<div class="form-group">

@@ -56,9 +56,6 @@ class PesertaMagangModel extends Model
         ],
     ];
 
-    /**
-     * Aturan untuk mengubah peserta: NIK miliknya sendiri tidak dianggap duplikat.
-     */
     public function aturanUbah(int $id): array
     {
         $aturan = $this->validationRules;
@@ -68,10 +65,6 @@ class PesertaMagangModel extends Model
         return $aturan;
     }
 
-    /**
-     * Setiap pengubahan data otomatis memakai aturanUbah(), supaya NIK milik
-     * peserta itu sendiri tidak dianggap duplikat oleh aturan is_unique.
-     */
     public function update($id = null, $row = null): bool
     {
         $aturanAsli = $this->validationRules;
@@ -100,13 +93,6 @@ class PesertaMagangModel extends Model
             ->first();
     }
 
-    /**
-     * Data magang milik satu akun. Dipakai role peserta.
-     *
-     * Penting: id peserta diambil dari user_id yang tersimpan di session,
-     * bukan dari parameter URL, supaya peserta tidak bisa membuka data
-     * peserta lain hanya dengan mengganti angka di alamat browser.
-     */
     public function cariMilikUser(int $userId): ?array
     {
         return $this->denganAkun()
@@ -114,23 +100,11 @@ class PesertaMagangModel extends Model
             ->first();
     }
 
-    /**
-     * Cari data peserta berdasarkan NIK, untuk keperluan pendaftaran akun.
-     *
-     * Dipakai saat peserta mendaftarkan akunnya sendiri: NIK-nya harus sudah
-     * terdaftar sebagai peserta magang, dan belum dipakai akun lain.
-     */
     public function cariNik(string $nik): ?array
     {
         return $this->where('nik', $nik)->first();
     }
 
-    /**
-     * Jumlah peserta per status untuk kartu dashboard.
-     *
-     * Status dihitung lewat perbandingan tanggal di SQL, bukan dengan
-     * mengambil seluruh baris lalu menghitungnya di PHP.
-     */
     public function hitungPerStatus(): array
     {
         $hariIni = date('Y-m-d');
@@ -145,9 +119,6 @@ class PesertaMagangModel extends Model
         ];
     }
 
-    /**
-     * Peserta yang magangnya sedang berjalan, untuk tabel ringkas di dashboard.
-     */
     public function sedangMagang(int $batas = 5): array
     {
         $hariIni = date('Y-m-d');
